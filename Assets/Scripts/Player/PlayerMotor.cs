@@ -9,8 +9,12 @@ public class PlayerMotor : MonoBehaviour
     private bool isGrounded;
 
     [SerializeField] private float speed = 5f;
-    [SerializeField] private float gravity = -9.8f;
+    [SerializeField] private float gravity = -10.8f;
     [SerializeField] private float jumpHeight = 1f;
+    [SerializeField] private bool lerpCrouch;
+    [SerializeField] private bool crouching;
+    [SerializeField] private bool sprinting;
+    [SerializeField] private float crouchTimer;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +26,28 @@ public class PlayerMotor : MonoBehaviour
     void Update()
     {
         isGrounded = controller.isGrounded;
+
+        if (lerpCrouch)
+        {
+            crouchTimer += Time.deltaTime;
+            float pressed = crouchTimer / 1;
+            pressed *= pressed;
+
+            if (crouching)
+            {
+                controller.height = Mathf.Lerp(controller.height, 1f, pressed);
+            }
+            else
+            {
+                controller.height = Mathf.Lerp(controller.height, 2f, pressed);
+            }
+
+            if (pressed > 1)
+            {
+                lerpCrouch = false;
+                crouchTimer = 0f;
+            }
+        }
     }
 
     // Receive inputs for InputManager.cs and apply them to character controller.
@@ -48,6 +74,26 @@ public class PlayerMotor : MonoBehaviour
         if (isGrounded)
         {
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -3.0f * gravity);
+        }
+    }
+
+    public void Crouch()
+    {
+        crouching = !crouching;
+        crouchTimer = 0f;
+        lerpCrouch = true;
+    }
+
+    public void Sprint()
+    {
+        sprinting = !sprinting;
+
+        if (sprinting){
+            speed = 7f;
+        }
+        else
+        {
+            speed = 5f;
         }
     }
 }
