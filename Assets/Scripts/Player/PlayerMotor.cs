@@ -8,18 +8,41 @@ public class PlayerMotor : MonoBehaviour
     private Vector3 playerVelocity;
     private bool isGrounded;
 
+    [Header("Sprint")]
     [SerializeField] private float speed = 5f;
+    [SerializeField] private bool isSprinting = false;
+    [SerializeField] private float sprintDuration = 5f;
+    [SerializeField] private float sprintCooldown = .5f;
+    [SerializeField] private float sprintFOV = 80f;
+    [SerializeField] private float sprintFOVStepTime = 10f;
+    [SerializeField] private bool enableSprint = true;
+
+    [Header("Gravity")]
     [SerializeField] private float gravity = -10.8f;
+
+    [Header("Jump")]
     [SerializeField] private float jumpHeight = 1f;
+
+    [Header("Crouch")]
     [SerializeField] private bool lerpCrouch;
     [SerializeField] private bool crouching;
-    [SerializeField] private bool sprinting;
     [SerializeField] private float crouchTimer;
+
+    [SerializeField] private Camera playerCamera;
+
+    // Internal Variables
+    private float sprintRemaining;
+    private bool isSprintCooldown = false;
+    private float sprintCooldownReset;
+    private float sprintSpeed = 8f;
+    private float walkSpeed = 5f;
 
     // Start is called before the first frame update
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        sprintRemaining = sprintDuration;
+        sprintCooldownReset = sprintCooldown;
     }
 
     // Update is called once per frame
@@ -47,6 +70,11 @@ public class PlayerMotor : MonoBehaviour
                 lerpCrouch = false;
                 crouchTimer = 0f;
             }
+        }
+
+        if (enableSprint)
+        {
+            SprintFunction();
         }
     }
 
@@ -86,14 +114,57 @@ public class PlayerMotor : MonoBehaviour
 
     public void Sprint()
     {
-        sprinting = !sprinting;
+        speed = sprintSpeed;
+        isSprinting = true;
+    }
 
-        if (sprinting){
-            speed = 7f;
+    public void Walk()
+    {
+        speed = walkSpeed;
+        isSprinting = false;
+    }
+
+    private void SprintFunction()
+    {
+ 
+        if (isSprinting)
+        {
+          
+            crouching = false;
+            // Changes FOV of player wen sprinting
+            playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, sprintFOV, sprintFOVStepTime * Time.deltaTime);
+
+            // Drain sprint remaining while sprinting
+            sprintRemaining -= 1 * Time.deltaTime;
+
+            if (sprintRemaining <= 0)
+            {
+                isSprinting = false;
+                isSprintCooldown = true;
+            }
         }
         else
         {
+            // Regain sprint while not sprinting
+            sprintRemaining = Mathf.Clamp(sprintRemaining += 1 * Time.deltaTime, 0, sprintDuration);
+            Walk();
+        }
+
+        // Handles sprint cooldown
+        // When sprint remaining == 0 stops sprint ability until hitting cooldown
+        if (isSprintCooldown)
+        {
             speed = 5f;
+            sprintCooldown -= 1 * Time.deltaTime;
+
+            if (sprintCooldown <= 0)
+            {
+                isSprintCooldown = false;
+            }
+        }
+        else
+        {
+            sprintCooldown = sprintCooldownReset;
         }
     }
 }

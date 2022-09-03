@@ -25,7 +25,9 @@ public class InputManager : MonoBehaviour
         onFoot.Jump.performed += ctx => motor.Jump();
 
         onFoot.Crouch.performed += ctx => motor.Crouch();
-        onFoot.Sprint.performed += ctx => motor.Sprint();
+        onFoot.Sprint.started += ctx => motor.Sprint();
+        onFoot.Sprint.canceled += ctx => motor.Walk();
+  
     }
 
     // Update is called once per frame
@@ -34,6 +36,7 @@ public class InputManager : MonoBehaviour
         // Playermotor to move using the value from movement action.
         motor.ProcessMove(onFoot.Movement.ReadValue<Vector2>());
     }
+
 
     private void LateUpdate()
     {
