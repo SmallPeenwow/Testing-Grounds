@@ -24,9 +24,9 @@ public class PlayerMotor : MonoBehaviour
     [SerializeField] private float jumpHeight = 1f;
 
     [Header("Crouch")]
-    [SerializeField] private bool lerpCrouch;
-    [SerializeField] private bool crouching;
-    [SerializeField] private float crouchTimer;
+    [SerializeField] private bool isCrouching;
+    [SerializeField] private float crouchHeight = .75f;
+    private Vector3 originalScale;
 
     [SerializeField] private Camera playerCamera;
 
@@ -34,8 +34,8 @@ public class PlayerMotor : MonoBehaviour
     private float sprintRemaining;
     private bool isSprintCooldown = false;
     private float sprintCooldownReset;
-    private float sprintSpeed = 8f;
-    private float walkSpeed = 5f;
+    private readonly float sprintSpeed = 8f;
+    private readonly float walkSpeed = 5f;
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +43,7 @@ public class PlayerMotor : MonoBehaviour
         controller = GetComponent<CharacterController>();
         sprintRemaining = sprintDuration;
         sprintCooldownReset = sprintCooldown;
+        originalScale = transform.localScale;
     }
 
     // Update is called once per frame
@@ -50,26 +51,14 @@ public class PlayerMotor : MonoBehaviour
     {
         isGrounded = controller.isGrounded;
 
-        if (lerpCrouch)
+        if (isCrouching) // Crouches height down well Ctl key is held in and reduces walkSpeed
         {
-            crouchTimer += Time.deltaTime;
-            float pressed = crouchTimer / 1;
-            pressed *= pressed;
-
-            if (crouching)
-            {
-                controller.height = Mathf.Lerp(controller.height, 1f, pressed);
-            }
-            else
-            {
-                controller.height = Mathf.Lerp(controller.height, 2f, pressed);
-            }
-
-            if (pressed > 1)
-            {
-                lerpCrouch = false;
-                crouchTimer = 0f;
-            }
+            transform.localScale = new Vector3(originalScale.x, crouchHeight, originalScale.z);
+            Walk();
+        }
+        else if(!isCrouching) // Stands up to full height on release of Ctl key and brings up normal walkSpeed
+        {
+            transform.localScale = new Vector3(originalScale.x, originalScale.y, originalScale.z);
         }
 
         if (enableSprint)
@@ -101,15 +90,19 @@ public class PlayerMotor : MonoBehaviour
     {
         if (isGrounded)
         {
+            Stand();
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -3.0f * gravity);
         }
     }
 
     public void Crouch()
     {
-        crouching = !crouching;
-        crouchTimer = 0f;
-        lerpCrouch = true;
+        isCrouching = true;
+    }
+
+    public void Stand()
+    {
+        isCrouching = false;
     }
 
     public void Sprint()
@@ -120,7 +113,7 @@ public class PlayerMotor : MonoBehaviour
 
     public void Walk()
     {
-        speed = walkSpeed;
+        speed = isCrouching ? 3.5f : walkSpeed;
         isSprinting = false;
     }
 
@@ -129,8 +122,8 @@ public class PlayerMotor : MonoBehaviour
  
         if (isSprinting)
         {
-          
-            crouching = false;
+
+            Stand();
             // Changes FOV of player wen sprinting
             playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, sprintFOV, sprintFOVStepTime * Time.deltaTime);
 

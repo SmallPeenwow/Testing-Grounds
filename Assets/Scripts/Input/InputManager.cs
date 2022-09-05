@@ -22,9 +22,13 @@ public class InputManager : MonoBehaviour
         look = GetComponent<PlayerLook>();
         
         // started, canceled, performed Actions 3 states
+        // Jump
         onFoot.Jump.performed += ctx => motor.Jump();
 
-        onFoot.Crouch.performed += ctx => motor.Crouch();
+        // Crouch
+        onFoot.Crouch.started += ctx => motor.Crouch();
+        onFoot.Crouch.canceled += ctx => motor.Stand();
+        // Sprint 
         onFoot.Sprint.started += ctx => motor.Sprint();
         onFoot.Sprint.canceled += ctx => motor.Walk();
   
