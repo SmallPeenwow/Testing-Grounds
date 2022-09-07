@@ -11,6 +11,7 @@ public class InputManager : MonoBehaviour
 
     private PlayerMotor motor;
     private PlayerLook look;
+    private FlashLightShoulder flashLightShoulder;
 
     // Start is called before the first frame update
     void Awake()
@@ -20,6 +21,7 @@ public class InputManager : MonoBehaviour
 
         motor = GetComponent<PlayerMotor>();
         look = GetComponent<PlayerLook>();
+        flashLightShoulder = GetComponent<FlashLightShoulder>();
 
         Cursor.lockState = CursorLockMode.Locked;
         
@@ -33,6 +35,9 @@ public class InputManager : MonoBehaviour
         // Sprint 
         onFoot.Sprint.started += ctx => motor.Sprint();
         onFoot.Sprint.canceled += ctx => motor.Walk();
+
+        // FlashLightShoulder
+        onFoot.Torch.performed += ctx => flashLightShoulder.ToggleFlashLight();
   
     }
 
