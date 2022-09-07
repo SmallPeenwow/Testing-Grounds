@@ -20,6 +20,8 @@ public class InputManager : MonoBehaviour
 
         motor = GetComponent<PlayerMotor>();
         look = GetComponent<PlayerLook>();
+
+        Cursor.lockState = CursorLockMode.Locked;
         
         // started, canceled, performed Actions 3 states
         // Jump

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6266655404918903018}
   - component: {fileID: 5029199922418789907}
   - component: {fileID: 3313554162938705259}
+  - component: {fileID: 7725581631552663916}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -134,12 +135,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  isSprinting: 0
+  sprintDuration: 5
+  sprintCooldown: 0.5
+  sprintFOV: 80
+  sprintFOVStepTime: 10
+  enableSprint: 1
   gravity: -9.8
   jumpHeight: 1
-  lerpCrouch: 0
-  crouching: 0
-  sprinting: 0
-  crouchTimer: 0
+  isCrouching: 0
+  crouchHeight: 0.75
+  playerCamera: {fileID: 0}
 --- !u!114 &5029199922418789907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +173,18 @@ MonoBehaviour:
   camera: {fileID: 6081992539861087197}
   xSensitivity: 30
   ySensitivity: 30
+--- !u!114 &7725581631552663916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6081992539740619815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b0b1ed9e02e877439d49075299b7305, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6081992539861087199
 GameObject:
   m_ObjectHideFlags: 0
