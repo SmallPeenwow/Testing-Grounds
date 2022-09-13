@@ -34,8 +34,16 @@ public class PlayerInteract : MonoBehaviour
             {
                 Interactable interactable = hitInfo.collider.GetComponent<Interactable>();
 
-                playerUI.UpdateText(interactable.promptMessage);
+                //if (interactable.GetComponent<DoorMove>()) // For door movement to be constant
+                //{
+                //    //Vector2 LookRotation = inputManager.onFoot.Look.ReadValue<Vector2>();
 
+                //    //inputManager.onFoot.Interact.performed += ctx => interactable.BaseInteract();
+                //    //inputManager.onFoot.Interact.canceled += ctx => interactable.GetComponent<DoorMove>().MoveDoor(LookRotation);
+                //}
+          
+                playerUI.UpdateText(interactable.promptMessage);
+                
                 if (inputManager.onFoot.Interact.triggered)
                 {
                     interactable.BaseInteract();
