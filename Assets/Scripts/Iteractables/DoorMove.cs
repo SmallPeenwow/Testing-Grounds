@@ -2,16 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//https://stackoverflow.com/questions/37129162/open-a-door-front-and-back-in-unity3d-similar-to-amnesia // Code for moving doors
+
 public class DoorMove : Interactable
 {
     [SerializeField] private Rigidbody doorRigid;
     [SerializeField] private HingeJoint joint;
-    private Camera fpsCamera;
+    private float rotateSpeed = 40f;
+
+    private bool doorState = false;
+    private float yRot = 0;
+    private InputManager inputManager;
 
     private Vector3 mOffset;
     private float mZCoord;
 
-    private float rotateSpeed = 10f;
     public float moveSpeed = 1f;
 
     Vector3 mPrevPos = Vector3.zero;
@@ -34,6 +39,22 @@ public class DoorMove : Interactable
         //hingeJoint.limits = jl;
         //MoveDoor(inputManager.onFoot.Look.ReadValue<Vector2>());
         //Interact();
+        //if (doorState)
+        //{
+        //    DoorMovement();
+        //}
+    }
+
+    private void DoorMovement()
+    {
+        float yRot = 0.0f; // rotation around the up/y axis
+
+
+        //yRot += Input.GetAxis("Mouse Y") * inputManager.GetComponent<PlayerLook>().ySensitivity * Time.deltaTime;
+        Debug.Log(yRot * 1000 + " First");
+        yRot = Mathf.Clamp(0, yRot, 0);
+        Debug.Log(yRot);
+        transform.localRotation = Quaternion.Euler(0.0f, yRot * 1000, 0.0f);
     }
 
     //public void MoveDoor(Vector2 input)
@@ -56,6 +77,21 @@ public class DoorMove : Interactable
     protected override void Interact()
     {
         Debug.Log("yes");
+
+       /* transform.localRotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0.0f, 80f, 0), rotateSpeed * Time.deltaTime)*/
+
+        if (!doorState)
+        {
+            transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+        }
+        else if (doorState)
+        {
+            transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
+        }
+
+        doorState = !doorState;
+
+
         //float speed = 2;
         //Transform camTransform = Camera.main.transform;
         //Vector3 camPosition = new Vector3(transform.position.x, camTransform.position.y, transform.position.z);
@@ -66,15 +102,15 @@ public class DoorMove : Interactable
 
         //var v = Input.mousePosition.x;
 
-        Vector3 position2 = transform.position;
-        position2.y -= Time.deltaTime * moveSpeed;
-        transform.position = position2;
-        Debug.Log(position2);
+        //Vector3 position2 = transform.position;
+        //position2.y -= Time.deltaTime * moveSpeed;
+        //transform.position = position2;
+        //Debug.Log(position2);
 
-        //transform.Rotate(new Vector3(0f, rotateSpeed * Time.deltaTime, 0f));
+        ////transform.Rotate(new Vector3(0f, rotateSpeed * Time.deltaTime, 0f));
 
-        //doorRigid.AddTorque(new Vector3(0f, UnityEngine.Random.Range(-1f, 1f), 0f), ForceMode.Impulse);
-        transform.localRotation = Quaternion.Euler(0, position2.y, 0);
+        ////doorRigid.AddTorque(new Vector3(0f, UnityEngine.Random.Range(-1f, 1f), 0f), ForceMode.Impulse);
+        //transform.localRotation = Quaternion.Euler(0, position2.y, 0);
         //Debug.Log(horizontalMovement);
 
 
