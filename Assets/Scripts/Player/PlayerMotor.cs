@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerMotor : MonoBehaviour
@@ -53,11 +54,13 @@ public class PlayerMotor : MonoBehaviour
 
         if (isCrouching) // Crouches height down well Ctl key is held in and reduces walkSpeed
         {
+            //transform.localScale = new float3(originalScale.x, crouchHeight, originalScale.z);
             transform.localScale = new Vector3(originalScale.x, crouchHeight, originalScale.z);
             Walk();
         }
         else if(!isCrouching) // Stands up to full height on release of Ctl key and brings up normal walkSpeed
         {
+            //transform.localScale = new float3(originalScale.x, originalScale.y, originalScale.z);
             transform.localScale = new Vector3(originalScale.x, originalScale.y, originalScale.z);
         }
 
