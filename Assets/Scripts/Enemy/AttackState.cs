@@ -6,6 +6,7 @@ public class AttackState : BaseState
 {
     private float moveTimer;
     private float losePlayerTimer;
+    private float shotTimer;
 
     public override void Enter()
     {
@@ -40,6 +41,11 @@ public class AttackState : BaseState
                 stateMachine.ChangeState(new PatrolState());
             }
         }
+    }
+
+    public void Shoot()
+    {
+        Debug.Log("Shoot");
     }
 
     // Start is called before the first frame update
