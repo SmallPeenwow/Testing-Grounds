@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour
     private GameObject player;
 
     public NavMeshAgent Agent { get => agent; }
+    public GameObject Player { get => player; }
 
     public Path path;
 
