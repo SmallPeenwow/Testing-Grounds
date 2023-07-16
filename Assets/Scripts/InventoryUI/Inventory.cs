@@ -99,4 +99,63 @@ public class Inventory : MonoBehaviour
             index++;
         }
     }
+
+    public int AddItem(Item item, int amount)
+    {
+        // Check for open spaces in existing slots
+        foreach(ItemSlotInfo i in items)
+        {
+            if (i.item != null)
+            {
+                if (i.item.GiveName() == item.GiveName())
+                {
+                    if (amount > i.item.MaxStacks() - i.stacks)
+                    {
+                        amount -= i.item.MaxStacks() - i.stacks;
+                        i.stacks = i.item.MaxStacks();
+                    }
+                    else
+                    {
+                        i.stacks += amount;
+
+                        if (inventoryMenu.activeSelf) RefreshInventory();
+                        return 0;
+                    }
+                }
+            }
+        }
+
+        // Fill empty slots with leftover items
+        foreach(ItemSlotInfo i in items)
+        {
+            if (i.item == null)
+            {
+                if (amount > item.MaxStacks())
+                {
+                    i.item = item;
+                    i.stacks = item.MaxStacks();
+                    amount -= item.MaxStacks();
+                }
+                else
+                {
+                    i.item = item;
+                    i.stacks = amount;
+
+                    if (inventoryMenu.activeSelf) RefreshInventory();
+                    return 0;
+                }
+            }
+        }
+
+        // No space in Inventory, return remainder items
+        Debug.Log("No space in Inventory for: " + item.GiveName());
+        if (inventoryMenu.activeSelf) RefreshInventory();
+        return amount;
+    }
+
+    public void ClearSlot(ItemSlotInfo slot)
+    {
+        slot.item = null;
+        slot.stacks = 0;
+    }
 }
