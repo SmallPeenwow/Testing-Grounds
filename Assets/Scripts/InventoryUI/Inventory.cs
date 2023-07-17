@@ -17,6 +17,8 @@ public class Inventory : MonoBehaviour
 
     private List<ItemPanel> existingPanels = new List<ItemPanel>();
 
+    Dictionary<string, Item> allItemsDictionary = new Dictionary<string, Item>();
+
     [Space]
     public int inventorySize = 24;
 
@@ -28,9 +30,29 @@ public class Inventory : MonoBehaviour
             items.Add(new ItemSlotInfo(null, 0));
         }
 
+        List<Item> allItems = GetAllItems().ToList();
+
+        string itemsInDictionary = "Items in Dictionary: ";
+
+        foreach (Item item in allItems)
+        {
+            if (!allItemsDictionary.ContainsKey(item.GiveName()))
+            {
+                allItemsDictionary.Add(item.GiveName(), item);
+                itemsInDictionary += ", " + item.GiveName();
+            }
+            else
+            {
+                Debug.Log("" + item + " already exists in Dictionary - shares name with " + allItemsDictionary[item.GiveName()]);
+            }
+        }
+
+        itemsInDictionary += ".";
+        Debug.Log(itemsInDictionary);
+
         // Add Items for testing
-        AddItem(new WoodItem(), 40);
-        AddItem(new StoneItem(), 20);
+        AddItem("Wood", 40);
+        AddItem("Stone", 20);
     }
 
     // Update is called once per frame
@@ -51,6 +73,11 @@ public class Inventory : MonoBehaviour
 
                 RefreshInventory();
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Mouse1) && mouse.itemSlot.item != null)
+        {
+            RefreshInventory();
         }
     }
 
@@ -110,8 +137,19 @@ public class Inventory : MonoBehaviour
         mouse.EmptySlot();
     }
 
-    public int AddItem(Item item, int amount)
+    public int AddItem(string itemName, int amount)
     {
+        // Find Item to add
+        Item item = null;
+        allItemsDictionary.TryGetValue(itemName, out item);
+
+        // Exit method if no item was found
+        if (item == null)
+        {
+            Debug.Log("Could not find Item in Dictionary to add to Inventory");
+            return amount;
+        }
+
         // Check for open spaces in existing slots
         foreach(ItemSlotInfo i in items)
         {
@@ -167,5 +205,12 @@ public class Inventory : MonoBehaviour
     {
         slot.item = null;
         slot.stacks = 0;
+    }
+
+    IEnumerable<Item> GetAllItems()
+    {
+        return System.AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes()).Where(type => type.IsSubclassOf(typeof(Item)))
+            .Select(type => System.Activator.CreateInstance(type) as Item);
     }
 }
