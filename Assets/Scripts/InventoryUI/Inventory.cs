@@ -30,6 +30,7 @@ public class Inventory : MonoBehaviour
 
         // Add Items for testing
         AddItem(new WoodItem(), 40);
+        AddItem(new StoneItem(), 20);
     }
 
     // Update is called once per frame

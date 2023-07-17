@@ -52,6 +52,17 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
     public void PickupItem()
     {
         mouse.itemSlot = itemSlot;
+        mouse.sourceItemPanel = this;
+
+        if (Input.GetKey(KeyCode.LeftShift) && itemSlot.stacks > 1)
+        {
+            mouse.splitSize = itemSlot.stacks / 2;
+        }
+        else
+        {
+            mouse.splitSize = itemSlot.stacks;
+        }
+
         mouse.SetUI();
     }
 
@@ -63,8 +74,18 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
     public void DropItem()
     {
         itemSlot.item = mouse.itemSlot.item;
-        itemSlot.stacks = mouse.itemSlot.stacks;
-        inventory.ClearSlot(mouse.itemSlot);
+
+        if (mouse.splitSize < mouse.itemSlot.stacks)
+        {
+            itemSlot.stacks = mouse.splitSize;
+            mouse.itemSlot.stacks -= mouse.splitSize;
+            mouse.EmptySlot();
+        }
+        else
+        {
+            itemSlot.stacks = mouse.itemSlot.stacks;
+            inventory.ClearSlot(mouse.itemSlot);
+        }
     }
 
     public void SwapItem(ItemSlotInfo slotA, ItemSlotInfo slotB)
