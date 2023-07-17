@@ -12,4 +12,9 @@ public abstract class Item
     {
         return Resources.Load<Sprite>("UI/ItemImages/No Item Image Icon");
     }
+
+    public virtual GameObject DropObject()
+    {
+        return Resources.Load<GameObject>("PickupItems/DefaultItem");
+    }
 }

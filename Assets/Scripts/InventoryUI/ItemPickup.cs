@@ -9,7 +9,7 @@ public class ItemPickup : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.CompareTag("Player"))
         {
             Inventory playerInvenotry = other.GetComponentInChildren<Inventory>();
 
@@ -24,6 +24,6 @@ public class ItemPickup : MonoBehaviour
     {
         amount = inventory.AddItem(itemToDrop, amount);
 
-        if (amount < 1) Destroy(this.gameObject);
+        if (amount < 1) Destroy(this.transform.root.gameObject);
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class Inventory : MonoBehaviour
 {
@@ -79,6 +80,11 @@ public class Inventory : MonoBehaviour
         {
             RefreshInventory();
         }
+
+        if (Input.GetKeyDown(KeyCode.Mouse0) && mouse.itemSlot.item != null && !EventSystem.current.IsPointerOverGameObject())
+        {
+            DropItem(mouse.itemSlot.item.GiveName());
+        }
     }
 
     public void RefreshInventory()
@@ -135,6 +141,50 @@ public class Inventory : MonoBehaviour
         }
 
         mouse.EmptySlot();
+    }
+
+    public void DropItem(string itemName)
+    {
+        // Find Item to add
+        Item item = null;
+        allItemsDictionary.TryGetValue(itemName, out item);
+
+        // Exit method if no item was found
+        if (item == null)
+        {
+            Debug.Log("Could not find Item in Dictionary to Inventory");
+            return;
+        }
+
+        Transform camTransform = Camera.main.transform;
+
+        GameObject droppedItem = Instantiate(item.DropObject(),
+            this.transform.position + new Vector3(0, 1.8f, 0) + camTransform.forward,
+            Quaternion.Euler(Vector3.zero));
+
+        Rigidbody rb = droppedItem.GetComponent<Rigidbody>();
+
+        if (rb != null)
+        {
+            rb.velocity = camTransform.forward * 25;
+        }
+
+        ItemPickup ip = droppedItem.GetComponentInChildren<ItemPickup>();
+
+        if (ip != null)
+        {
+            ip.itemToDrop = itemName;
+            ip.amount = mouse.splitSize;
+            mouse.itemSlot.stacks -= mouse.splitSize;
+        }
+
+        if (mouse.itemSlot.stacks < 1)
+        {
+            ClearSlot(mouse.itemSlot);
+        }
+
+        mouse.EmptySlot();
+        RefreshInventory();
     }
 
     public int AddItem(string itemName, int amount)
