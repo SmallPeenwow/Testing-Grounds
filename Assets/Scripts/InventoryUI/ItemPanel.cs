@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using JetBrains.Annotations;
+using System.Diagnostics.Tracing;
 
 public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IDropHandler
 {
@@ -100,6 +102,33 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
         slotB.stacks = tempItem.stacks;
     }
 
+    public void StackItem(ItemSlotInfo source, ItemSlotInfo destination, int amount)
+    {
+        int slotsAvailable = destination.item.MaxStacks() - destination.stacks;
+
+        if (slotsAvailable == 0) return;
+        
+        if (amount > slotsAvailable)
+        {
+            source.stacks -= slotsAvailable;
+            destination.stacks = destination.item.MaxStacks();
+        }
+
+        if (amount <= slotsAvailable)
+        {
+            destination.stacks += amount;
+
+            if (source.stacks == amount)
+            {
+                inventory.ClearSlot(source);
+            }
+            else
+            {
+                source.stacks -= amount;
+            }
+        }
+    }
+
     public void OnClick()
     {
         if (inventory != null)
@@ -131,6 +160,12 @@ public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandle
                 else if (itemSlot.item.GiveName() != mouse.itemSlot.item.GiveName())
                 {
                     SwapItem(itemSlot, mouse.itemSlot);
+                    inventory.RefreshInventory();
+                }
+                // Clicked on occupided slot of same type
+                else if (itemSlot.stacks < itemSlot.item.MaxStacks())
+                {
+                    StackItem(mouse.itemSlot, itemSlot, mouse.splitSize);
                     inventory.RefreshInventory();
                 }
             }
