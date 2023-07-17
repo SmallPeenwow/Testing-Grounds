@@ -13,6 +13,8 @@ public class Inventory : MonoBehaviour
     public GameObject itemPanel;
     public GameObject itemPanelGrid;
 
+    public Mouse mouse;
+
     private List<ItemPanel> existingPanels = new List<ItemPanel>();
 
     [Space]
@@ -25,6 +27,9 @@ public class Inventory : MonoBehaviour
         {
             items.Add(new ItemSlotInfo(null, 0));
         }
+
+        // Add Items for testing
+        AddItem(new WoodItem(), 40);
     }
 
     // Update is called once per frame
@@ -35,6 +40,7 @@ public class Inventory : MonoBehaviour
             if (inventoryMenu.activeSelf)
             {
                 inventoryMenu.SetActive(false);
+                mouse.EmptySlot();
                 Cursor.lockState = CursorLockMode.Locked;
             }
             else
@@ -98,6 +104,8 @@ public class Inventory : MonoBehaviour
 
             index++;
         }
+
+        mouse.EmptySlot();
     }
 
     public int AddItem(Item item, int amount)
