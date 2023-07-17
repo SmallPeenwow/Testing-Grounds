@@ -5,13 +5,49 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class ItemPanel : MonoBehaviour
+public class ItemPanel : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IDropHandler
 {
     public Inventory inventory;
     private Mouse mouse;
     public ItemSlotInfo itemSlot;
     public Image itemImage;
     public TextMeshProUGUI stacksText;
+
+    private bool click;
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        eventData.pointerPress = this.gameObject;
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        click = true;
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (click)
+        {
+            OnClick();
+            click = false;
+        }
+    }
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        OnClick();
+        click = false;
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (click)
+        {
+            OnClick();
+            click = false;
+        }
+    }
 
     public void PickupItem()
     {
@@ -33,7 +69,14 @@ public class ItemPanel : MonoBehaviour
 
     public void SwapItem(ItemSlotInfo slotA, ItemSlotInfo slotB)
     {
+        // Hold item for transfer
+        ItemSlotInfo tempItem = new ItemSlotInfo(slotA.item, slotA.stacks);
 
+        slotA.item = slotB.item;
+        slotA.stacks = slotB.stacks;
+
+        slotB.item = tempItem.item;
+        slotB.stacks = tempItem.stacks;
     }
 
     public void OnClick()
@@ -66,7 +109,8 @@ public class ItemPanel : MonoBehaviour
                 // Clicked on occupied slot of different item type
                 else if (itemSlot.item.GiveName() != mouse.itemSlot.item.GiveName())
                 {
-
+                    SwapItem(itemSlot, mouse.itemSlot);
+                    inventory.RefreshInventory();
                 }
             }
         }
