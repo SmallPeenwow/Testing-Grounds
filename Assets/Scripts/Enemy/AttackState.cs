@@ -39,6 +39,8 @@ public class AttackState : BaseState
                 enemy.Agent.SetDestination(enemy.transform.position + (Random.insideUnitSphere * 4));
                 moveTimer = 0;
             }
+
+            enemy.LastKnowPos = enemy.Player.transform.position;
         }
         else // Lost sight of the player
         {
@@ -47,7 +49,7 @@ public class AttackState : BaseState
             if (losePlayerTimer > 8)
             {
                 // Change to the search state.
-                stateMachine.ChangeState(new PatrolState());
+                stateMachine.ChangeState(new SearchState());
             }
         }
     }
@@ -68,17 +70,5 @@ public class AttackState : BaseState
 
         Debug.Log("Shoot");
         shotTimer = 0;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
